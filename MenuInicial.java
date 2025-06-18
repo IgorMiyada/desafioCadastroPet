@@ -1,6 +1,3 @@
-import javax.crypto.spec.PSource;
-import java.util.Scanner;
-
 public class MenuInicial {
 
     @Override
@@ -19,10 +16,10 @@ public class MenuInicial {
 
         switch (opcaoMenu){
             case 1:
-                leituraDeArquivo.cadastroPet();
+                leituraDeArquivo.leituraDeFormulario();
                 break;
             case 2:
-                leituraDeArquivo.cadastroPet();
+                leituraDeArquivo.leituraDeFormulario();
                 break;
             case 3:
                 System.out.println("Deletar um pet cadastrado");
