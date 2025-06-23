@@ -1,7 +1,5 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,6 +44,7 @@ public class LeituraDeArquivo {
                     System.out.println("Linha fora do padrão");
                 }
             }
+            savePetInFile(pet);
         }catch(IOException error){
             System.out.println("Erro ao ler o arquivo " + error.getMessage());
         }
@@ -147,6 +146,37 @@ public class LeituraDeArquivo {
                 break;
         }
         return validaResposta;
+    }
+
+    public void savePetInFile(Pet pet){
+        LocalDateTime date = LocalDateTime.now();
+        int year = date.getYear();
+        int month = date.getMonthValue();
+        int day = date.getDayOfMonth();
+        int hour = date.getHour();
+        int minute = date.getMinute();
+        String petAddress = String.format("%s,%s,%s",pet.getEndereco().getCity(),pet.getEndereco().getRua(),pet.getEndereco().getHouseNumber());
+        String petName = pet.getNome().replace(" ","");
+        String fileName = String.format("%d%d%dT%d%d-%S",year,month,day,hour,minute,petName);
+        File file = new File("petsCadastrados\\"+fileName+".txt");
+        try(FileWriter fileWriter = new FileWriter(file);BufferedWriter bufferedWriter= new BufferedWriter(fileWriter); ){
+            bufferedWriter.write("1 - "+pet.getNome());
+            bufferedWriter.newLine();
+            bufferedWriter.write("2 - " + pet.getTipoDePet().toString());
+            bufferedWriter.newLine();
+            bufferedWriter.write("3 - " + pet.getSexoPet().toString());
+            bufferedWriter.newLine();
+            bufferedWriter.write("4 - " + petAddress);
+            bufferedWriter.newLine();
+            bufferedWriter.write("5 - " + pet.getIdade());
+            bufferedWriter.newLine();
+            bufferedWriter.write("6 - " + pet.getPeso() + "kg");
+            bufferedWriter.newLine();
+            bufferedWriter.write("7 - " +pet.getRaca());
+            bufferedWriter.flush();
+        }catch(IOException error){
+            System.out.println("Erro ao tentar salvar o arquivo :" + error.getMessage());
+        }
     }
 
     public boolean isThereAnyNumber(String text){
