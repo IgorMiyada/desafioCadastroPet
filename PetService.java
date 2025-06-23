@@ -44,6 +44,7 @@ public class LeituraDeArquivo {
                     System.out.println("Linha fora do padrão");
                 }
             }
+            RepositorioPet.adicionarPet(pet);
             savePetInFile(pet);
         }catch(IOException error){
             System.out.println("Erro ao ler o arquivo " + error.getMessage());
