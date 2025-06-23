@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class LeituraDeArquivo {
+public class PetService {
     static File FILE = new File("C:\\Igor\\Java\\DesafioSistemaDeCadastro\\desafioCadastro\\formulario.txt");
     Scanner scanner = new Scanner(System.in);
 

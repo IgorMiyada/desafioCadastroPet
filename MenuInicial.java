@@ -12,14 +12,14 @@ public class MenuInicial {
     }
 
     public void opcoesMenu(int opcaoMenu){
-        LeituraDeArquivo leituraDeArquivo = new LeituraDeArquivo();
+        PetService petService = new PetService();
 
         switch (opcaoMenu){
             case 1:
-                leituraDeArquivo.leituraDeFormulario();
+                petService.leituraDeFormulario();
                 break;
             case 2:
-                leituraDeArquivo.leituraDeFormulario();
+                petService.leituraDeFormulario();
                 break;
             case 3:
                 System.out.println("Deletar um pet cadastrado");
