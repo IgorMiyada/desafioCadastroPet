@@ -9,9 +9,9 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         MenuInicial menu = new MenuInicial();
-        int opcaoSelecionada;
+        int opcaoSelecionada=0;
 
-        while(true){
+        while(opcaoSelecionada!=6){
             try{
                 System.out.println(menu);
                 System.out.print("Digite um número : ");
@@ -19,7 +19,7 @@ public class Main {
 
                 if(opcaoSelecionada>0 && opcaoSelecionada<7){
                     menu.opcoesMenu(opcaoSelecionada);
-                    break;
+
                 }
                 else{
                     System.out.println("Opção inválida! Digite uma opção válida");
