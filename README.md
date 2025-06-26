@@ -85,7 +85,7 @@ O menu deve ser exibido no terminal e o usuário deve poder escolher uma opção
 ## 📍Passo 3: Cadastro de novos Pets 📝
 
 O usuário, ao selecionar a opção 1, deve ser capaz de cadastrar um novo pet.
-Neste momento, você deverá ler as **PERGUNTAS** do arquivo `formulario.txt` e armazenar as respostas em um objeto do tipo `Pet`.
+Neste momento, você deverá ler as **PERGUNTAS** do arquivo `formulario.txt` e armazenar as respostas em um objeto do tipo `Model.Pet`.
 
 ### _Regras ⚠️_
 
@@ -129,7 +129,7 @@ Exemplo de arquivo salvo:
 7 - Siames
 ```
 
-## 📍Passo 5: Buscar os dados do Pet Cadastrado 🔍
+## 📍Passo 5: Buscar os dados do Model.Pet Cadastrado 🔍
 O usuário, ao selecionar a opção 2, deverá ser capaz de buscar o pet usando determinados dados.
 O usuário poderá buscar o pet por:
 - Nome ou sobrenome

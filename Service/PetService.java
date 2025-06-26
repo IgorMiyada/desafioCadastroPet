@@ -1,5 +1,18 @@
+package Service;
+
+import Model.Pet;
+import Enum.TipoDePet;
+import Enum.SexoPet;
+import Model.Endereco;
+import Repository.RepositorioPet;
 import java.io.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -175,9 +188,56 @@ public class PetService {
             bufferedWriter.newLine();
             bufferedWriter.write("7 - " +pet.getRaca());
             bufferedWriter.flush();
+            System.out.println("Arquivo pet Salvo");
         }catch(IOException error){
             System.out.println("Erro ao tentar salvar o arquivo :" + error.getMessage());
         }
+    }
+
+    public static List<String> buscarPorCriterios(int tipo1,String criterio1){
+        List<String> petsEncontrados = new ArrayList<>();
+        Path petDirectory = Paths.get("petsCadastrados\\");
+        try(DirectoryStream<Path> arquivosTxt = Files.newDirectoryStream(petDirectory,"*.txt")){
+
+            for(Path arquivo : arquivosTxt){
+                List<String> linhasArquivo = Files.readAllLines(arquivo);
+                if(linhasArquivo.get(tipo1-1).toUpperCase().contains(criterio1.toUpperCase())){
+                    String conteudoCompleto = String.join(" - ",linhasArquivo);
+                    petsEncontrados.add(conteudoCompleto);
+                }
+
+            }
+
+        }catch (IOException error){
+            System.out.println(error.getMessage());
+        }
+        return petsEncontrados;
+    }
+    public static List<String> buscarPorCriterios(int tipo1,String criterio1,int tipo2,String criterio2) {
+        List<String> petsEncontrados = new ArrayList<>();
+        Path petDirectory = Paths.get("petsCadastrados\\");
+
+        try (DirectoryStream<Path> arquivosTxt = Files.newDirectoryStream(petDirectory, "*.txt")) {
+
+            for (Path arquivo : arquivosTxt) {
+                List<String> linhasArquivo = Files.readAllLines(arquivo);
+                boolean valida1 = false, valida2 = false;
+                if (linhasArquivo.get(tipo1 - 1).toUpperCase().contains(criterio1.toUpperCase())) {
+                    valida1 = true;
+                }
+                if (linhasArquivo.get(tipo2 - 1).toUpperCase().contains(criterio2.toUpperCase())) {
+                    valida2 = true;
+                }
+                if (valida1 && valida2) {
+                    String conteudoCompleto = String.join(" - ", linhasArquivo);
+                    petsEncontrados.add(conteudoCompleto);
+                }
+            }
+
+        } catch (IOException error) {
+            System.out.println(error.getMessage());
+        }
+        return petsEncontrados;
     }
 
     public boolean isThereAnyNumber(String text){

@@ -1,3 +1,8 @@
+package Model;
+import Enum.TipoDePet;
+import Enum.SexoPet;
+
+
 public class Pet {
     private String nome;
     private TipoDePet tipoDePet;

@@ -1,3 +1,5 @@
+package Model;
+
 public class Endereco {
     private String houseNumber;
     private String city;
