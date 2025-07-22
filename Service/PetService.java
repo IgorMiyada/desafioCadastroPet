@@ -6,13 +6,8 @@ import Enum.SexoPet;
 import Model.Endereco;
 import Repository.RepositorioPet;
 import java.io.*;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,55 +18,91 @@ public class PetService {
     Scanner scanner = new Scanner(System.in);
 
 
-    public void leituraDeFormulario(){
-        List<String> questions = new ArrayList<>();
-        Pet pet = new Pet();
-        String answer=null;
-        try(FileReader fileReader = new FileReader(FILE); BufferedReader bufferedReader = new BufferedReader(fileReader)){
+    public List<String> leituraDeFormulario(File file){
+        List<String> linhasDoArquivo = new ArrayList<>();
+        try(FileReader fileReader = new FileReader(file); BufferedReader bufferedReader = new BufferedReader(fileReader)){
             String linhaDeTexto;
             while((linhaDeTexto=bufferedReader.readLine())!=null){
                 if(linhaDeTexto.isEmpty()){
                     continue;
                 }
-                questions.add(linhaDeTexto);
+                linhasDoArquivo.add(linhaDeTexto);
             }
-            for(String question : questions){
-                Pattern pattern = Pattern.compile("(^\\d)(.+)$");
-                Matcher matcher = pattern.matcher(question);
-                if(matcher.matches()){
-                    int questionNumber = Integer.parseInt(matcher.group(1));
-                    boolean respostaValida = false;
-                    while(!respostaValida){
-                        System.out.println(question);
-                        if(questionNumber!=4){
-                            System.out.println("Digite sua resposta : ");
-                            answer = scanner.nextLine();
-                        }
-                        try{
-                            respostaValida =  armazenaResposta(questionNumber,answer,pet);
-                        }catch(RuntimeException error){
-                            System.out.println(error.getMessage());
-                        }
-                    }
-                }else{
-                    System.out.println("Linha fora do padrão");
-                }
-            }
-            RepositorioPet.adicionarPet(pet);
-            savePetInFile(pet);
         }catch(IOException error){
             System.out.println("Erro ao ler o arquivo " + error.getMessage());
         }
+        return linhasDoArquivo;
+    }
+
+    public void cadastroDePet(){
+        Pet pet = new Pet();
+        String answer = null;
+        List<String> linhasDoArquivo = leituraDeFormulario(FILE);
+        for(String lineText : linhasDoArquivo){
+            Pattern pattern = Pattern.compile("(^\\d)(.+)$");
+            Matcher matcher = pattern.matcher(lineText);
+            if(matcher.matches()){
+                int questionNumber = Integer.parseInt(matcher.group(1));
+                boolean respostaValida = false;
+                while(!respostaValida){
+                    System.out.println(lineText);
+                    if(questionNumber!=4){
+                        System.out.println("Digite sua resposta : ");
+                        answer = scanner.nextLine();
+                    }
+                    try{
+                        respostaValida =  armazenaResposta(questionNumber,answer,pet);
+                    }catch(RuntimeException error){
+                        System.out.println(error.getMessage());
+                    }
+                }
+            }else{
+                System.out.println("Linha fora do padrão");
+            }
+        }
+        RepositorioPet.adicionarPet(pet);
+        savePetInFile(pet);
+    }
+
+    public void alteracaoPet(File file){
+        Pet pet = new Pet();
+        String answer = null;
+        List<String> linhasDoArquivo = leituraDeFormulario(file);
+        for(String lineText : linhasDoArquivo){
+            Pattern pattern = Pattern.compile("(^\\d)(\\s*-\\s*)(.+)$");
+            Matcher matcher = pattern.matcher(lineText);
+            if(matcher.matches()){
+                int questionNumber = Integer.parseInt(matcher.group(1));
+                boolean respostaValida = false;
+                while(!respostaValida){
+                    if(questionNumber==2 || questionNumber==3){
+                        answer = matcher.group(3);
+                    }
+                    else if(questionNumber!=4){
+                        System.out.println("Dado atual : " + lineText);
+                        System.out.println("Digite o dado para ser atualizado : ");
+                        answer = scanner.nextLine();
+                    }
+                    try{
+                        respostaValida =  armazenaResposta(questionNumber,answer,pet);
+                    }catch(RuntimeException error){
+                        System.out.println(error.getMessage());
+                    }
+                }
+            }else{
+                System.out.println("Linha fora do padrão");
+            }
+        }
+        RepositorioPet.adicionarPet(pet);
+        updatePetData(pet,file);
     }
 
     public boolean armazenaResposta(int questionNumber, String resposta, Pet pet){
         boolean validaResposta = false;
-        boolean respostaVazia = resposta.trim().isEmpty();
-
 
         switch(questionNumber){
             case 1:
-                if(respostaVazia){
+                if(isTheAnswerEmpty(resposta)){
                     pet.setNome(Pet.NAO_INFORMADO);validaResposta = true;break;
                 }
                 String[] verificaNome = resposta.split("\\s+");
@@ -102,20 +133,20 @@ public class PetService {
             case 4:
                 System.out.println("Digite o número da casa : ");
                 String houseNumber = scanner.nextLine();
-                if(houseNumber.trim().isEmpty()){
+                if(isTheAnswerEmpty(houseNumber)){
                     houseNumber = Pet.NAO_INFORMADO;
                 }
                 else if(!isThereAnyNumber(houseNumber)){
                     throw new IllegalArgumentException("Insira apenas números ");
                 }
-                System.out.println("Digite o nome da cidade : ");
-                String cityName = scanner.nextLine();
-                if(isThereAnyNumber(cityName)){
-                    throw new IllegalArgumentException("Não é permitido números ");
-                }
                 System.out.println("Digite o nome da rua : ");
                 String streetName = scanner.nextLine();
                 if(isThereAnyNumber(streetName)){
+                    throw new IllegalArgumentException("Não é permitido números ");
+                }
+                System.out.println("Digite o nome da cidade : ");
+                String cityName = scanner.nextLine();
+                if(isThereAnyNumber(cityName)){
                     throw new IllegalArgumentException("Não é permitido números ");
                 }
                 Endereco endereco = new Endereco(houseNumber,cityName,streetName);
@@ -124,7 +155,7 @@ public class PetService {
                 break;
             case 5:
                 resposta = resposta.replace(',','.');
-                if(respostaVazia){
+                if(isTheAnswerEmpty(resposta)){
                     pet.setIdade(Pet.NAO_INFORMADO);validaResposta = true;break;
                 } else if(!isThereAnyNumber(resposta)){
                     throw new IllegalArgumentException("Insira apenas números");
@@ -136,7 +167,7 @@ public class PetService {
                 break;
             case 6:
                 resposta = resposta.replace(',','.');
-                if(respostaVazia){
+                if(isTheAnswerEmpty(resposta)){
                     pet.setPeso(Pet.NAO_INFORMADO);
                     validaResposta = true;
                     break;
@@ -147,7 +178,7 @@ public class PetService {
                 validaResposta = true;
                 break;
             case 7:
-                if(respostaVazia){
+                if(isTheAnswerEmpty(resposta)){
                     pet.setRaca(Pet.NAO_INFORMADO);
                     validaResposta = true;
                     break;
@@ -182,9 +213,10 @@ public class PetService {
             bufferedWriter.newLine();
             bufferedWriter.write("4 - " + petAddress);
             bufferedWriter.newLine();
-            bufferedWriter.write("5 - " + pet.getIdade());
+            bufferedWriter.write("5 - " + pet.getIdade() + " anos");
             bufferedWriter.newLine();
-            bufferedWriter.write("6 - " + pet.getPeso() + "kg");
+            String peso = pet.getPeso().equals(Pet.NAO_INFORMADO) ? pet.getPeso() : (pet.getPeso() + " kg");
+            bufferedWriter.write("6 - " + peso);
             bufferedWriter.newLine();
             bufferedWriter.write("7 - " +pet.getRaca());
             bufferedWriter.flush();
@@ -194,60 +226,140 @@ public class PetService {
         }
     }
 
-    public static List<String> buscarPorCriterios(int tipo1,String criterio1){
-        List<String> petsEncontrados = new ArrayList<>();
-        Path petDirectory = Paths.get("petsCadastrados\\");
-        try(DirectoryStream<Path> arquivosTxt = Files.newDirectoryStream(petDirectory,"*.txt")){
+    public void updatePetData(Pet pet, File file){
+        File newFileName = null;
+        String oldFileName = file.toString();
+        Pattern pattern = Pattern.compile("(.+?)\\\\(.+)-(.+)(\\.txt)");
+        Matcher matcher = pattern.matcher(oldFileName);
+        if(matcher.matches()){
+            String petName = pet.getNome().replace(" ","");
+            newFileName = new File("petsCadastrados\\"+matcher.group(2)+"-"+petName+".txt");
+        }
+        String petAddress = String.format("%s,%s,%s",pet.getEndereco().getCity(),pet.getEndereco().getRua(),pet.getEndereco().getHouseNumber());
+        try(FileWriter fileWriter = new FileWriter(file);BufferedWriter bufferedWriter= new BufferedWriter(fileWriter); ){
+            bufferedWriter.write("1 - "+pet.getNome());
+            bufferedWriter.newLine();
+            bufferedWriter.write("2 - " + pet.getTipoDePet().toString());
+            bufferedWriter.newLine();
+            bufferedWriter.write("3 - " + pet.getSexoPet().toString());
+            bufferedWriter.newLine();
+            bufferedWriter.write("4 - " + petAddress);
+            bufferedWriter.newLine();
+            bufferedWriter.write("5 - " + pet.getIdade() + " anos");
+            bufferedWriter.newLine();
+            String peso = pet.getPeso().equals(Pet.NAO_INFORMADO) ? pet.getPeso() : (pet.getPeso() + " kg");
+            bufferedWriter.write("6 - " + peso);
+            bufferedWriter.newLine();
+            bufferedWriter.write("7 - " +pet.getRaca());
+            bufferedWriter.flush();
+            System.out.println("Arquivo pet Salvo");
+        }catch(IOException error){
+            System.out.println("Erro ao tentar salvar o arquivo :" + error.getMessage());
+        }
+        file.renameTo(newFileName);
 
-            for(Path arquivo : arquivosTxt){
-                List<String> linhasArquivo = Files.readAllLines(arquivo);
-                if(linhasArquivo.get(tipo1-1).toUpperCase().contains(criterio1.toUpperCase())){
-                    String conteudoCompleto = String.join(" - ",linhasArquivo);
-                    petsEncontrados.add(conteudoCompleto);
+    }
+
+    public void buscarPorCriterios(int tipo1,String criterio1){
+        List<File> files = new ArrayList<>();
+        File petFolder = new File("petsCadastrados\\");
+        List<File> arquivosTxt = Arrays.asList(petFolder.listFiles());
+        try{
+            for(File file : arquivosTxt){
+                List<String> textoArquivo = Files.readAllLines(file.toPath());
+                if(textoArquivo.get(tipo1-1).toUpperCase().contains(criterio1.toUpperCase())){
+                    files.add(file);
                 }
-
             }
 
-        }catch (IOException error){
+            if(files.isEmpty()){
+                System.out.println();
+                System.out.println("Nenhum pet encontrado com os critérios informados.");
+                System.out.println();
+                Thread.sleep(2000);
+            }else{
+                int count = 1;
+                for(File file : files){
+                    String textoFormatado = Files.readString(file.toPath());
+                    System.out.println("Pet " + count +" : " );
+                    System.out.println(textoFormatado);
+                    System.out.println("------------------------------------");
+                    count++;
+                }
+                System.out.println("Digite o número do pet desejado : ");
+                int petToBeChanged = scanner.nextInt();
+                scanner.nextLine();
+                File selectedFile = files.get(petToBeChanged-1);
+                alteracaoPet(selectedFile);
+                System.out.println("Arquivo alterado");
+            }
+
+
+        }catch (IOException | InterruptedException error){
             System.out.println(error.getMessage());
         }
-        return petsEncontrados;
     }
-    public static List<String> buscarPorCriterios(int tipo1,String criterio1,int tipo2,String criterio2) {
-        List<String> petsEncontrados = new ArrayList<>();
-        Path petDirectory = Paths.get("petsCadastrados\\");
-
-        try (DirectoryStream<Path> arquivosTxt = Files.newDirectoryStream(petDirectory, "*.txt")) {
-
-            for (Path arquivo : arquivosTxt) {
-                List<String> linhasArquivo = Files.readAllLines(arquivo);
+    public void buscarPorCriterios(int tipo1,String criterio1,int tipo2,String criterio2) {
+        List<File> files = new ArrayList<>();
+        File petFolder = new File("petsCadastrados\\");
+        List<File> arquivosTxt = Arrays.asList(petFolder.listFiles());
+        try{
+            for(File file : arquivosTxt){
                 boolean valida1 = false, valida2 = false;
-                if (linhasArquivo.get(tipo1 - 1).toUpperCase().contains(criterio1.toUpperCase())) {
+                List<String> textoArquivo = Files.readAllLines(file.toPath());
+                if (textoArquivo.get(tipo1-1).toUpperCase().contains(criterio1.toUpperCase())) {
                     valida1 = true;
                 }
-                if (linhasArquivo.get(tipo2 - 1).toUpperCase().contains(criterio2.toUpperCase())) {
+                if (textoArquivo.get(tipo2-1).toUpperCase().contains(criterio2.toUpperCase())) {
                     valida2 = true;
                 }
                 if (valida1 && valida2) {
-                    String conteudoCompleto = String.join(" - ", linhasArquivo);
-                    petsEncontrados.add(conteudoCompleto);
+                    files.add(file);
+                    break;
                 }
             }
 
-        } catch (IOException error) {
+            if(files.isEmpty()){
+                System.out.println();
+                System.out.println("Nenhum pet encontrado com os critérios informados.");
+                System.out.println();
+                Thread.sleep(2000);
+            }else{
+                int count = 1;
+                for(File file : files){
+                    String textoFormatado = Files.readString(file.toPath());
+                    System.out.println("Pet " + count +" : " );
+                    System.out.println(textoFormatado);
+                    System.out.println("------------------------------------");
+                    count++;
+                }
+                System.out.println("Digite o número do pet desejado : ");
+                int petToBeChanged = scanner.nextInt();
+                scanner.nextLine();
+                File selectedFile = files.get(petToBeChanged-1);
+                alteracaoPet(selectedFile);
+                System.out.println("Arquivo alterado");
+            }
+
+        }catch (IOException | InterruptedException error){
             System.out.println(error.getMessage());
         }
-        return petsEncontrados;
     }
 
-    public boolean isThereAnyNumber(String text){
+    private boolean isThereAnyNumber(String text){
         Pattern patternOnlyNumbers = Pattern.compile("^(\\d)+([\\.,])?(\\d)?$");
         Matcher matcherNumber = patternOnlyNumbers.matcher(text);
         return matcherNumber.find();
     }
-    public boolean isThereAnySpecialChar(String text){
+    private boolean isThereAnySpecialChar(String text){
         Pattern patternOnlyLetters = Pattern.compile("[^a-zA-Z $]");
         Matcher matcherOnlyLetters =  patternOnlyLetters.matcher(text);
         return matcherOnlyLetters.find();
     }
+
+    private boolean isTheAnswerEmpty(String text){
+        return text.trim().isEmpty();
+    }
+
+
 }

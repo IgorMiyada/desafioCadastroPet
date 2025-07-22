@@ -21,10 +21,10 @@ public class MenuInicialService {
 
         switch (opcaoMenu){
             case 1:
-                petService.leituraDeFormulario();
+                petService.cadastroDePet();
                 break;
             case 2:
-                menuBusca();
+                alteraPet(petService);
                 break;
             case 3:
                 System.out.println("Deletar um pet cadastrado");
@@ -42,43 +42,51 @@ public class MenuInicialService {
                 break;
         }
     }
-    public void menuBusca() {
+    public void alteraPet(PetService petService) {
         Scanner scanner = new Scanner(System.in);
         List<String> resultado;
         String criterio1="",criterio2 = "";
-        int tipo2 = 0;
+        int tipo1 = 0,tipo2 = 0;
         System.out.println("=== Busca personalizada de pets ===");
-        System.out.println("1-nome,2-Tipo de animal,3-Sexo,4-Endereço,5-idade,6-Peso,7-Raça");
-        System.out.println("Digite qual você deseja filtrar : ");
-        int tipo1 = scanner.nextInt();
+        while(true){
+            imprimeMenuBusca();
+            tipo1 = scanner.nextInt();
+            if(tipo1>7 || tipo1<1){
+                System.out.println("Opção fora de escopo");
+            }else{
+                break;
+            }
+        }
         scanner.nextLine();
         System.out.println("Digite o dado desejado : ");
         criterio1 = scanner.nextLine();
         System.out.println("Você deseja adicionar outro componente a sua busca ?(s/n)");
         if(scanner.next().equalsIgnoreCase("s")){
-            System.out.println("1-nome,2-Tipo de animal,3-Sexo,4-Endereço,5-idade,6-Peso,7-Raça");
-            System.out.println("Digite qual você deseja filtrar : ");
-            tipo2 = scanner.nextInt();
-            scanner.nextLine();
+            while(true) {
+                imprimeMenuBusca();
+                tipo2 = scanner.nextInt();
+                scanner.nextLine();
+                if (tipo2 > 7 || tipo2 < 1) {
+                    System.out.println("Opção fora de escopo");
+                } else {
+                    break;
+                }
+            }
             System.out.println("Digite o outro dado que você deseja fazer busca : ");
             criterio2 = scanner.nextLine();
         }
-
         if(!criterio2.isEmpty()){
-            resultado = PetService.buscarPorCriterios(tipo1,criterio1.toUpperCase(),tipo2,criterio2);
+            petService.buscarPorCriterios(tipo1,criterio1.toUpperCase(),tipo2,criterio2);
         }else{
-            resultado = PetService.buscarPorCriterios(tipo1,criterio1.toUpperCase());
+            petService.buscarPorCriterios(tipo1,criterio1.toUpperCase());
         }
 
-        System.out.println("\n=== Resultados encontrados ===");
-        if (resultado.isEmpty()) {
-            System.out.println("Nenhum pet encontrado com os critérios informados.");
-        } else {
-            for (String string : resultado) {
-                System.out.println(string);
-                System.out.println("==============================================");
-            }
-        }
+
+    }
+
+    public void imprimeMenuBusca(){
+        System.out.println("1-nome,2-Tipo de animal,3-Sexo,4-Endereço,5-idade,6-Peso,7-Raça");
+        System.out.println("Digite qual você deseja filtrar : ");
     }
 
 }
