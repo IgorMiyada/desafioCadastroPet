@@ -263,7 +263,15 @@ public class PetService {
     public void buscarPorCriterios(int tipo1,String criterio1){
         List<File> files = new ArrayList<>();
         File petFolder = new File("petsCadastrados\\");
-        List<File> arquivosTxt = Arrays.asList(petFolder.listFiles());
+
+        FileFilter fileFilter = new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file.getName().endsWith(".txt");
+            }
+        };
+
+        File [] arquivosTxt = petFolder.listFiles(fileFilter);
         try{
             for(File file : arquivosTxt){
                 List<String> textoArquivo = Files.readAllLines(file.toPath());
@@ -302,7 +310,15 @@ public class PetService {
     public void buscarPorCriterios(int tipo1,String criterio1,int tipo2,String criterio2) {
         List<File> files = new ArrayList<>();
         File petFolder = new File("petsCadastrados\\");
-        List<File> arquivosTxt = Arrays.asList(petFolder.listFiles());
+
+        FileFilter fileFilter = new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file.getName().endsWith(".txt");
+            }
+        };
+
+        File [] arquivosTxt = petFolder.listFiles(fileFilter);
         try{
             for(File file : arquivosTxt){
                 boolean valida1 = false, valida2 = false;
