@@ -221,7 +221,8 @@ public class PetService {
             bufferedWriter.write("7 - " +pet.getRaca());
             bufferedWriter.flush();
             System.out.println("Arquivo pet Salvo");
-        }catch(IOException error){
+            Thread.sleep(2000);
+        }catch(IOException | InterruptedException error){
             System.out.println("Erro ao tentar salvar o arquivo :" + error.getMessage());
         }
     }
@@ -252,8 +253,9 @@ public class PetService {
             bufferedWriter.newLine();
             bufferedWriter.write("7 - " +pet.getRaca());
             bufferedWriter.flush();
-            System.out.println("Arquivo pet Salvo");
-        }catch(IOException error){
+            System.out.println("Arquivo pet atualizado");
+            Thread.sleep(2000);
+        }catch(IOException | InterruptedException error){
             System.out.println("Erro ao tentar salvar o arquivo :" + error.getMessage());
         }
         file.renameTo(newFileName);
@@ -299,7 +301,6 @@ public class PetService {
                 scanner.nextLine();
                 File selectedFile = files.get(petToBeChanged-1);
                 alteracaoPet(selectedFile);
-                System.out.println("Arquivo alterado");
             }
 
 
@@ -354,7 +355,6 @@ public class PetService {
                 scanner.nextLine();
                 File selectedFile = files.get(petToBeChanged-1);
                 alteracaoPet(selectedFile);
-                System.out.println("Arquivo alterado");
             }
 
         }catch (IOException | InterruptedException error){
