@@ -45,7 +45,6 @@ public class MenuInicialService {
     }
     public void alteraPet(PetService petService) {
         Scanner scanner = new Scanner(System.in);
-        List<String> resultado;
         String criterio1="",criterio2 = "";
         int tipo1 = 0,tipo2 = 0;
         System.out.println("=== Busca personalizada de pets ===");
@@ -76,12 +75,44 @@ public class MenuInicialService {
             System.out.println("Digite o outro dado que você deseja fazer busca : ");
             criterio2 = scanner.nextLine();
         }
-        if(!criterio2.isEmpty()){
-            petService.buscarPorCriterios(tipo1,criterio1.toUpperCase(),tipo2,criterio2);
-        }else{
-            petService.buscarPorCriterios(tipo1,criterio1.toUpperCase());
-        }
 
+        petService.alteracaoPet(tipo1,criterio1.toUpperCase(),tipo2,criterio2);
+
+    }
+
+    public void deletaPet(){
+        Scanner scanner = new Scanner(System.in);
+        String criterio1="",criterio2="";
+        int tipo1=0,tipo2=0;
+        System.out.println("=== Busca personalizada de pets ===");
+        while(true){
+            imprimeMenuBusca();
+            tipo1 = scanner.nextInt();
+            if(tipo1 >7 || tipo1 < 1){
+                System.out.println("Opção fora do escopo");
+            }else{
+                break;
+            }
+        }
+        System.out.println("Digite o dado a ser pesquisado : ");
+        criterio1 = scanner.nextLine();
+        scanner.nextLine();
+        System.out.println("Deseja adicionar outro critério?(s/n");
+        if(!scanner.next().isEmpty()){
+            while(true){
+                imprimeMenuBusca();
+                tipo2 = scanner.nextInt();
+                if(tipo2>7 || tipo2<1){
+                    System.out.println("Opção fora do escopo");
+                }
+                else{
+                    break;
+                }
+            }
+            System.out.println("Digite o dado a ser pesquisado : ");
+            criterio2 = scanner.nextLine();
+            scanner.nextLine();
+        }
 
     }
 
