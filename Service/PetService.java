@@ -65,7 +65,6 @@ public class PetService {
     }
 
     public void alteracaoPet(int tipo1,String criterio1,int tipo2,String criterio2){
-        Pet pet = new Pet();
         File file = new File("");
         if(criterio2.isEmpty()){
             file = buscarPorCriterios(tipo1,criterio1);
@@ -74,6 +73,7 @@ public class PetService {
             file = buscarPorCriterios(tipo1,criterio1,tipo2,criterio2);
         }
         if(file.exists()){
+            Pet pet = new Pet();
             String answer = null;
             List<String> linhasDoArquivo = leituraDeFormulario(file);
             for(String lineText : linhasDoArquivo){
@@ -106,6 +106,36 @@ public class PetService {
         }
         else return;
 
+    }
+
+    public void deletaPet(int tipo1,String criterio1,int tipo2,String criterio2){
+        Scanner scanner = new Scanner(System.in);
+        File file = new File("");
+        if(criterio2.isEmpty()) {
+            file = buscarPorCriterios(tipo1, criterio1);
+        }else{
+            file = buscarPorCriterios(tipo1,criterio1,tipo2,criterio2);
+        }
+        if(file.exists()){
+            while(true){
+                System.out.println("Deseja mesmo excluir o pet ? (s/n)");
+                String confirmacao = scanner.next();
+                if(!confirmacao.equalsIgnoreCase("s") && !confirmacao.equalsIgnoreCase("n")){
+                    System.out.println("Resposta fora do escopo");
+                }
+                else{
+                    try{
+                        file.delete();
+                        System.out.println("Arquivo deletado com sucesso");
+                        Thread.sleep(2000);
+                        break;
+                    }catch(RuntimeException | InterruptedException error){
+                        System.out.println(error.getMessage());
+                    }
+                }
+            }
+
+        }
     }
 
     public boolean armazenaResposta(int questionNumber, String resposta, Pet pet){

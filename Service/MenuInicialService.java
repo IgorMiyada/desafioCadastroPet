@@ -28,7 +28,7 @@ public class MenuInicialService {
                 alteraPet(petService);
                 break;
             case 3:
-                System.out.println("Deletar um pet cadastrado");
+                deletaPet();
                 break;
             case 4:
                 System.out.println("Listar odos os pets cadastrados");
@@ -82,6 +82,7 @@ public class MenuInicialService {
 
     public void deletaPet(){
         Scanner scanner = new Scanner(System.in);
+        PetService petService = new PetService();
         String criterio1="",criterio2="";
         int tipo1=0,tipo2=0;
         System.out.println("=== Busca personalizada de pets ===");
@@ -98,7 +99,7 @@ public class MenuInicialService {
         criterio1 = scanner.nextLine();
         scanner.nextLine();
         System.out.println("Deseja adicionar outro critério?(s/n");
-        if(!scanner.next().isEmpty()){
+        if(scanner.next().equalsIgnoreCase("s")){
             while(true){
                 imprimeMenuBusca();
                 tipo2 = scanner.nextInt();
@@ -113,6 +114,8 @@ public class MenuInicialService {
             criterio2 = scanner.nextLine();
             scanner.nextLine();
         }
+
+        petService.deletaPet(tipo1,criterio1,tipo2,criterio2);
 
     }
 
