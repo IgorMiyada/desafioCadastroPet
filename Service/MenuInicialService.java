@@ -7,7 +7,8 @@ public class MenuInicialService {
 
     @Override
     public String toString() {
-        return "Selecione uma das opções para continuar\n" +
+        return "######################\n"+
+                "Selecione uma das opções para continuar\n" +
                 "1.Cadastrar um pet\n" +
                 "2.Alterar os dados do pet cadastrado\n" +
                 "3.Deletar um pet cadastrado\n" +
