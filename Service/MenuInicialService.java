@@ -1,5 +1,8 @@
 package Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,29 +22,43 @@ public class MenuInicialService {
 
     public void opcoesMenu(int opcaoMenu){
         PetService petService = new PetService();
-
-        switch (opcaoMenu){
-            case 1:
-                petService.cadastroDePet();
-                break;
-            case 2:
-                alteraPet(petService);
-                break;
-            case 3:
-                deletaPet();
-                break;
-            case 4:
-                System.out.println("Listar odos os pets cadastrados");
-                break;
-            case 5:
-                System.out.println("Listar pets por algum critério");
-                break;
-            case 6:
-                System.out.println("Sair");break;
-            default :
-                System.out.println("Opção inválida! Digite outra opção ");
-                break;
+        try{
+            switch (opcaoMenu){
+                case 1:
+                    petService.cadastroDePet();
+                    break;
+                case 2:
+                    alteraPet(petService);
+                    break;
+                case 3:
+                    deletaPet();
+                    break;
+                case 4:
+                    File[] petsCadastrados = petService.listaPets();
+                    if(petsCadastrados.length == 0){
+                        System.out.println("Não há pets cadastrados");
+                    }else{
+                        for(File pet:petsCadastrados){
+                            String textoFormatado = Files.readString(pet.toPath());
+                            System.out.println("Pet  : " );
+                            System.out.println(textoFormatado);
+                            System.out.println("------------------------------------");
+                        }
+                    }
+                    break;
+                case 5:
+                    System.out.println("Listar pets por algum critério");
+                    break;
+                case 6:
+                    System.out.println("Sair");break;
+                default :
+                    System.out.println("Opção inválida! Digite outra opção ");
+                    break;
+            }
+        }catch (IOException error){
+            System.out.println(error.getMessage());
         }
+
     }
     public void alteraPet(PetService petService) {
         Scanner scanner = new Scanner(System.in);
