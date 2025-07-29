@@ -4,7 +4,6 @@ import Model.Pet;
 import Enum.TipoDePet;
 import Enum.SexoPet;
 import Model.Endereco;
-import Repository.RepositorioPet;
 import java.io.*;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
@@ -60,7 +59,6 @@ public class PetService {
                 System.out.println("Linha fora do padrão");
             }
         }
-        RepositorioPet.adicionarPet(pet);
         savePetInFile(pet);
     }
 
@@ -101,7 +99,6 @@ public class PetService {
                     System.out.println("Linha fora do padrão");
                 }
             }
-            RepositorioPet.adicionarPet(pet);
             updatePetData(pet,file);
         }
         else return;
