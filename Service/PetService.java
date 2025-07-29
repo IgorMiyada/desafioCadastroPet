@@ -123,7 +123,9 @@ public class PetService {
                 if(!confirmacao.equalsIgnoreCase("s") && !confirmacao.equalsIgnoreCase("n")){
                     System.out.println("Resposta fora do escopo");
                 }
-                else{
+                else if (confirmacao.equalsIgnoreCase("n")){
+                    return;
+                }else{
                     try{
                         file.delete();
                         System.out.println("Arquivo deletado com sucesso");
